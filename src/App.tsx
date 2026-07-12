@@ -443,11 +443,11 @@ export default function App() {
               <div className="bg-white border border-slate-200 rounded-xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div className="space-y-1">
                   <span className="text-lg font-extrabold text-slate-800 block">⚡ Free & Tez Delivery</span>
-                  <p className="text-xs text-slate-400">₹1,500 se upar ki kharidari par super-fast free shipping.</p>
+                  <p className="text-xs text-slate-400">Super Fast 7-15 days delivery</p>
                 </div>
                 <div className="space-y-1 md:border-x md:border-slate-100 md:px-6">
                   <span className="text-lg font-extrabold text-slate-800 block">🔒 100% Safe Payments</span>
-                  <p className="text-xs text-slate-400">Card, UPI aur secure Cash on Delivery (COD) availability.</p>
+                  <p className="text-xs text-slate-400">Super safe payments with Razor Pay</p>
                 </div>
                 <div className="space-y-1">
                   <span className="text-lg font-extrabold text-slate-800 block">🔄 Easy Returns</span>

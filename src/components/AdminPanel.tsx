@@ -83,9 +83,19 @@ export default function AdminPanel({
       if (res.ok) {
         const data = await res.json();
         setOrders(data);
+        return;
       }
     } catch (err) {
-      console.error('Error fetching orders:', err);
+      console.warn('Error fetching orders from API, trying local storage:', err);
+    }
+
+    // Local storage fallback lookup
+    try {
+      const savedOrdersRaw = localStorage.getItem('ab_orders') || '[]';
+      const localOrders = JSON.parse(savedOrdersRaw);
+      setOrders(localOrders);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -95,9 +105,19 @@ export default function AdminPanel({
       if (res.ok) {
         const data = await res.json();
         setTickets(data);
+        return;
       }
     } catch (err) {
-      console.error('Error fetching tickets:', err);
+      console.warn('Error fetching tickets from API, trying local storage:', err);
+    }
+
+    // Local storage fallback lookup
+    try {
+      const savedTicketsRaw = localStorage.getItem('ab_tickets') || '[]';
+      const localTickets = JSON.parse(savedTicketsRaw);
+      setTickets(localTickets);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -118,9 +138,28 @@ export default function AdminPanel({
         setTicketReply('');
         setSelectedTicket(updatedTicket);
         fetchTickets();
+        setIsSubmittingReply(false);
+        return;
       }
     } catch (err) {
-      console.error('Error replying ticket:', err);
+      console.warn('Error replying ticket via API, falling back to local storage:', err);
+    }
+
+    // Local storage fallback ticket reply
+    try {
+      const savedTicketsRaw = localStorage.getItem('ab_tickets') || '[]';
+      const localTickets = JSON.parse(savedTicketsRaw);
+      const ticketIdx = localTickets.findIndex((t: any) => t.id === ticketId);
+      if (ticketIdx !== -1) {
+        localTickets[ticketIdx].status = 'resolved';
+        localTickets[ticketIdx].reply = ticketReply.trim();
+        localStorage.setItem('ab_tickets', JSON.stringify(localTickets));
+        setTicketReply('');
+        setSelectedTicket(localTickets[ticketIdx]);
+        fetchTickets();
+      }
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsSubmittingReply(false);
     }
@@ -284,9 +323,36 @@ export default function AdminPanel({
         setSelectedOrder(null);
         fetchOrders();
         alert(language === 'en' ? 'Order status updated successfully!' : 'Order status successfully update ho gaya hai!');
+        setIsUpdatingStatus(false);
+        return;
       }
     } catch (err) {
-      console.error(err);
+      console.warn('API request to update order status failed, using local fallback:', err);
+    }
+
+    // Local storage fallback order status update
+    try {
+      const savedOrdersRaw = localStorage.getItem('ab_orders') || '[]';
+      const localOrders = JSON.parse(savedOrdersRaw);
+      const orderIdx = localOrders.findIndex((o: any) => o.id === orderId);
+      if (orderIdx !== -1) {
+        localOrders[orderIdx].status = newStatus;
+        if (!localOrders[orderIdx].trackingUpdates) {
+          localOrders[orderIdx].trackingUpdates = [];
+        }
+        localOrders[orderIdx].trackingUpdates.push({
+          status: newStatus,
+          timestamp: new Date().toISOString(),
+          note: customNote.trim() || `Order status updated to ${newStatus}.`
+        });
+        localStorage.setItem('ab_orders', JSON.stringify(localOrders));
+        setCustomNote('');
+        setSelectedOrder(null);
+        fetchOrders();
+        alert(language === 'en' ? 'Order status updated successfully (offline mode)!' : 'Order status offline mode mein update ho gaya hai!');
+      }
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -306,11 +372,28 @@ export default function AdminPanel({
         setSelectedOrder(updatedOrder);
         fetchOrders();
         alert(language === 'en' ? 'Payment status updated successfully!' : 'Payment status successfully update ho gaya hai!');
-      } else {
-        alert(language === 'en' ? 'Failed to update payment status.' : 'Payment status update karne mein error aayi.');
+        setIsUpdatingPaymentStatus(false);
+        return;
       }
     } catch (err) {
-      console.error(err);
+      console.warn('API request to update payment status failed, using local fallback:', err);
+    }
+
+    // Local storage fallback payment status update
+    try {
+      const savedOrdersRaw = localStorage.getItem('ab_orders') || '[]';
+      const localOrders = JSON.parse(savedOrdersRaw);
+      const orderIdx = localOrders.findIndex((o: any) => o.id === orderId);
+      if (orderIdx !== -1) {
+        localOrders[orderIdx].paymentStatus = newPaymentStatus;
+        localStorage.setItem('ab_orders', JSON.stringify(localOrders));
+        setSelectedOrder(localOrders[orderIdx]);
+        fetchOrders();
+        alert(language === 'en' ? 'Payment status updated successfully (offline mode)!' : 'Payment status offline mode mein update ho gaya hai!');
+      }
+    } catch (e) {
+      console.error(e);
+      alert(language === 'en' ? 'Failed to update payment status.' : 'Payment status update karne mein error aayi.');
     } finally {
       setIsUpdatingPaymentStatus(false);
     }

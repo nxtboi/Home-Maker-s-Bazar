@@ -69,9 +69,23 @@ export default function HelpSupport({ currentUser, onNavigateToTab, onTrackOrder
       if (response.ok) {
         const data = await response.json();
         setUserTickets(data);
+        setIsSearchingTickets(false);
+        return;
       }
     } catch (err) {
-      console.error('Error fetching user tickets:', err);
+      console.warn('Error fetching user tickets from API, falling back to local storage:', err);
+    }
+
+    // Local storage fallback
+    try {
+      const savedTicketsRaw = localStorage.getItem('ab_tickets') || '[]';
+      const localTickets = JSON.parse(savedTicketsRaw);
+      const userFiltered = localTickets.filter(
+        (t: any) => t.email.trim().toLowerCase() === emailToFetch.trim().toLowerCase()
+      );
+      setUserTickets(userFiltered);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsSearchingTickets(false);
     }
@@ -88,19 +102,21 @@ export default function HelpSupport({ currentUser, onNavigateToTab, onTrackOrder
     setSubmitError('');
     setSubmitSuccess(false);
 
+    const payload = {
+      name: formName,
+      email: formEmail,
+      phone: formPhone,
+      category: formCategory,
+      subject: formSubject,
+      message: formMessage,
+      orderId: formOrderId
+    };
+
     try {
       const response = await fetch('/api/support/tickets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formName,
-          email: formEmail,
-          phone: formPhone,
-          category: formCategory,
-          subject: formSubject,
-          message: formMessage,
-          orderId: formOrderId
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -108,13 +124,52 @@ export default function HelpSupport({ currentUser, onNavigateToTab, onTrackOrder
         setFormSubject('');
         setFormMessage('');
         setFormOrderId('');
-        // Refresh ticket listing for user
         fetchUserTickets(formEmail);
+        setIsSubmitting(false);
+        return;
       } else {
-        const errData = await response.json();
-        setSubmitError(errData.error || (language === 'en' ? 'Something went wrong.' : 'Kuch galat ho gaya.'));
+        const errData = await response.json().catch(() => ({}));
+        if (response.status !== 404) {
+          setSubmitError(errData.error || (language === 'en' ? 'Something went wrong.' : 'Kuch galat ho gaya.'));
+          setIsSubmitting(false);
+          return;
+        }
       }
     } catch (err) {
+      console.warn('Ticket submission API failed, falling back to local storage:', err);
+    }
+
+    // Local storage fallback submission
+    try {
+      const localTicket = {
+        id: `TKT-${Math.floor(1000 + Math.random() * 9000)}`,
+        ...payload,
+        status: 'open',
+        createdAt: new Date().toISOString(),
+      };
+
+      const savedTicketsRaw = localStorage.getItem('ab_tickets') || '[]';
+      let localTickets = [];
+      try {
+        localTickets = JSON.parse(savedTicketsRaw);
+      } catch (e) {
+        console.error(e);
+      }
+      localTickets.unshift(localTicket);
+      localStorage.setItem('ab_tickets', JSON.stringify(localTickets));
+
+      setSubmitSuccess(true);
+      setFormSubject('');
+      setFormMessage('');
+      setFormOrderId('');
+      
+      // Refresh listing
+      const userFiltered = localTickets.filter(
+        (t: any) => t.email.trim().toLowerCase() === formEmail.trim().toLowerCase()
+      );
+      setUserTickets(userFiltered);
+    } catch (errFallback) {
+      console.error(errFallback);
       setSubmitError(language === 'en' ? 'Server error. Please try again.' : 'Server issue. Kripya dobara try karein.');
     } finally {
       setIsSubmitting(false);

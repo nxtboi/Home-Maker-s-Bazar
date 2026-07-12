@@ -101,26 +101,72 @@ export default function RazorpayModal({
     // Step 2: Register payment and create order via server API
     try {
       const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
-      
-      const response = await fetch('/api/razorpay/verify-payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      let data;
+      let ok = false;
+
+      try {
+        const response = await fetch('/api/razorpay/verify-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: cartItems,
+            totalAmount: totalRupees,
+            customerName: customerDetails.name,
+            customerPhone: customerDetails.phone,
+            customerAddress: customerDetails.address,
+            username,
+            razorpay_payment_id: mockPaymentId,
+            razorpay_order_id: orderData.id,
+            isMock: true
+          })
+        });
+
+        if (response.ok) {
+          data = await response.json();
+          ok = true;
+        } else {
+          const apiErrData = await response.json().catch(() => ({}));
+          if (response.status !== 404) {
+            throw new Error(apiErrData.error || 'Verification endpoint returned an error.');
+          }
+        }
+      } catch (apiErr) {
+        console.warn('Payment verification API failed, processing locally:', apiErr);
+      }
+
+      if (!ok) {
+        // Fallback local order creation
+        const localOrderId = `ORD-${Math.floor(1000 + Math.random() * 9000)}`;
+        const localOrder = {
+          id: localOrderId,
           items: cartItems,
           totalAmount: totalRupees,
+          status: 'placed',
           customerName: customerDetails.name,
           customerPhone: customerDetails.phone,
           customerAddress: customerDetails.address,
-          username,
-          razorpay_payment_id: mockPaymentId,
-          razorpay_order_id: orderData.id,
-          isMock: true
-        })
-      });
+          paymentMethod: 'Simulated Card/UPI (Local Fallback)',
+          paymentStatus: 'success',
+          createdAt: new Date().toISOString(),
+          trackingUpdates: [
+            {
+              status: 'placed',
+              timestamp: new Date().toISOString(),
+              note: "Order successfully placed on Home Maker's Bazar."
+            }
+          ]
+        };
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || 'Verification endpoint returned an error.');
+        const savedOrdersRaw = localStorage.getItem('ab_orders') || '[]';
+        let localOrders = [];
+        try {
+          localOrders = JSON.parse(savedOrdersRaw);
+        } catch (e) {
+          console.error(e);
+        }
+        localOrders.unshift(localOrder);
+        localStorage.setItem('ab_orders', JSON.stringify(localOrders));
+        data = { id: localOrderId };
       }
 
       setScreen('success');

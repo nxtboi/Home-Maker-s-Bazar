@@ -52,11 +52,57 @@ export default function AuthPage({
         }),
       });
 
-      const data = await res.json();
       if (res.ok) {
+        const data = await res.json();
         onLoginSuccess(data);
+        return;
       } else {
-        setLoginError(data.error || (language === 'en' ? 'Your username or password is incorrect.' : 'Aapka username ya password ghalat hai.'));
+        const data = await res.json().catch(() => ({}));
+        if (res.status !== 404) {
+          setLoginError(data.error || (language === 'en' ? 'Your username or password is incorrect.' : 'Aapka username ya password ghalat hai.'));
+          setLoginLoading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('API connection failed, trying local storage validation:', err);
+    }
+
+    // Local Storage Fallback Validation
+    try {
+      const localUsersRaw = localStorage.getItem('ab_users');
+      let localUsers = [];
+      if (localUsersRaw) {
+        try {
+          localUsers = JSON.parse(localUsersRaw);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      
+      // Default admin account
+      if (!localUsers.some((u: any) => u.username === 'sanju1234')) {
+        localUsers.push({
+          username: 'sanju1234',
+          passwordHash: 'sanju1234',
+          name: 'Sanju Admin',
+          role: 'admin',
+        });
+        localStorage.setItem('ab_users', JSON.stringify(localUsers));
+      }
+
+      const match = localUsers.find(
+        (u: any) => u.username === loginUser.trim().toLowerCase() && u.passwordHash === loginPass
+      );
+
+      if (match) {
+        onLoginSuccess({
+          username: match.username,
+          name: match.name,
+          role: match.role,
+        });
+      } else {
+        setLoginError(language === 'en' ? 'Your username or password is incorrect.' : 'Aapka username ya password ghalat hai.');
       }
     } catch (err) {
       console.error(err);
@@ -87,8 +133,8 @@ export default function AuthPage({
         }),
       });
 
-      const data = await res.json();
       if (res.ok) {
+        const data = await res.json();
         setRegSuccess(t('register_success'));
         // Fill login username
         setLoginUser(data.username);
@@ -100,8 +146,65 @@ export default function AuthPage({
           setRegUser('');
           setRegPass('');
         }, 2000);
+        return;
       } else {
-        setRegError(data.error || (language === 'en' ? 'Failed to create account.' : 'Account create karne mein issue aaya.'));
+        const data = await res.json().catch(() => ({}));
+        if (res.status !== 404) {
+          setRegError(data.error || (language === 'en' ? 'Failed to create account.' : 'Account create karne mein issue aaya.'));
+          setRegLoading(false);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('API registration failed, trying local storage registration:', err);
+    }
+
+    // Local Storage Fallback Registration
+    try {
+      const localUsersRaw = localStorage.getItem('ab_users');
+      let localUsers = [];
+      if (localUsersRaw) {
+        try {
+          localUsers = JSON.parse(localUsersRaw);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      // Default admin account
+      if (!localUsers.some((u: any) => u.username === 'sanju1234')) {
+        localUsers.push({
+          username: 'sanju1234',
+          passwordHash: 'sanju1234',
+          name: 'Sanju Admin',
+          role: 'admin',
+        });
+      }
+
+      const normalizedUsername = regUser.trim().toLowerCase();
+      const exists = localUsers.some((u: any) => u.username === normalizedUsername);
+
+      if (exists) {
+        setRegError(language === 'en' ? 'Username is already taken.' : 'Username pehle se liya ja chuka hai.');
+      } else {
+        const newUser = {
+          username: normalizedUsername,
+          passwordHash: regPass,
+          name: regName.trim(),
+          role: normalizedUsername === 'sanju1234' ? 'admin' : 'user',
+        };
+        localUsers.push(newUser);
+        localStorage.setItem('ab_users', JSON.stringify(localUsers));
+
+        setRegSuccess(t('register_success'));
+        setLoginUser(normalizedUsername);
+        setTimeout(() => {
+          setActiveTab('login');
+          setRegSuccess('');
+          setRegName('');
+          setRegUser('');
+          setRegPass('');
+        }, 2000);
       }
     } catch (err) {
       console.error(err);

@@ -31,9 +31,26 @@ export default function OrderTracker({ initialOrderId = '' }: OrderTrackerProps)
       if (res.ok) {
         const data = await res.json();
         setOrder(data);
-      } else {
-        setErrorMsg(t('order_not_found'));
+        setIsLoading(false);
+        return;
       }
+    } catch (err) {
+      console.warn('Order fetch API failed, falling back to local storage:', err);
+    }
+
+    // Local storage fallback lookup
+    try {
+      const savedOrdersRaw = localStorage.getItem('ab_orders');
+      if (savedOrdersRaw) {
+        const localOrders = JSON.parse(savedOrdersRaw);
+        const match = localOrders.find((o: any) => o.id.trim().toUpperCase() === id.trim().toUpperCase());
+        if (match) {
+          setOrder(match);
+          setIsLoading(false);
+          return;
+        }
+      }
+      setErrorMsg(t('order_not_found'));
     } catch (err) {
       console.error(err);
       setErrorMsg(t('server_error'));

@@ -42,9 +42,21 @@ export default function ProductDetailsModal({
       if (res.ok) {
         const data = await res.json();
         setReviews(data);
+        setIsLoading(false);
+        return;
       }
     } catch (err) {
-      console.error('Error fetching reviews:', err);
+      console.warn('Error fetching reviews from API, falling back to local storage:', err);
+    }
+
+    // Local storage fallback
+    try {
+      const savedReviewsRaw = localStorage.getItem('ab_reviews') || '[]';
+      const localReviews = JSON.parse(savedReviewsRaw);
+      const productReviews = localReviews.filter((r: any) => r.productId === product.id);
+      setReviews(productReviews);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -74,9 +86,39 @@ export default function ProductDetailsModal({
         setSuccessMsg(t('review_success'));
         fetchReviews();
         setTimeout(() => setSuccessMsg(''), 4000);
+        setIsSubmitting(false);
+        return;
       }
     } catch (err) {
-      console.error('Error submitting review:', err);
+      console.warn('Review submission API failed, falling back to local storage:', err);
+    }
+
+    // Local storage fallback review submission
+    try {
+      const savedReviewsRaw = localStorage.getItem('ab_reviews') || '[]';
+      const localReviews = JSON.parse(savedReviewsRaw);
+      const newReview = {
+        id: `rev-${Date.now()}`,
+        productId: product.id,
+        userName: authorName,
+        rating,
+        comment,
+        createdAt: new Date().toISOString()
+      };
+      localReviews.unshift(newReview);
+      localStorage.setItem('ab_reviews', JSON.stringify(localReviews));
+
+      setComment('');
+      setRating(5);
+      setSuccessMsg(t('review_success'));
+      
+      // Update local state directly
+      const productReviews = localReviews.filter((r: any) => r.productId === product.id);
+      setReviews(productReviews);
+
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsSubmitting(false);
     }

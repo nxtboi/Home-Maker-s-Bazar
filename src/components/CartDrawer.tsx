@@ -265,8 +265,8 @@ export default function CartDrawer({
     <div className="fixed inset-0 z-50 overflow-hidden" id="cart-drawer">
       <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-md transition-opacity" onClick={onClose} />
 
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white/30 backdrop-blur-xl flex flex-col shadow-2xl h-full border-l border-white/30">
+      <div className="absolute inset-y-0 right-0 w-full sm:max-w-md flex">
+        <div className="w-full bg-white/95 sm:bg-white/30 sm:backdrop-blur-xl flex flex-col shadow-2xl h-full sm:border-l border-white/30">
           
           {/* Header */}
           <div className="bg-[#0f766e]/85 backdrop-blur-md text-white p-4 flex justify-between items-center border-b border-white/20">

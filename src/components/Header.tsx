@@ -54,8 +54,10 @@ export default function Header({
             id="logo-container"
           >
             <div className="flex items-center space-x-1">
-              <span className="text-xl font-display font-black tracking-wider uppercase">
-                Home Maker's<span className="text-[#f59e0b] ml-1">{t('logo_sub')}</span>
+              <span className="text-base sm:text-lg md:text-xl font-display font-black tracking-wider uppercase">
+                <span className="hidden sm:inline">Home Maker's</span>
+                <span className="sm:hidden">HM</span>
+                <span className="text-[#f59e0b] ml-1">{t('logo_sub')}</span>
               </span>
             </div>
           </div>
@@ -80,11 +82,11 @@ export default function Header({
           )}
 
           {/* Navigation & Controls */}
-          <div className="flex items-center space-x-2 md:space-x-4" id="navigation-controls">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 md:space-x-4" id="navigation-controls">
 
             <button
               onClick={() => setActiveTab('shop')}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all border ${
+              className={`hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all border ${
                 activeTab === 'shop'
                   ? 'bg-white/20 border-white/25 text-white shadow-xs'
                   : 'border-transparent text-white/90 hover:bg-white/10 hover:text-white'
@@ -99,18 +101,18 @@ export default function Header({
             <div className="relative" ref={dropdownRef} id="my-account-dropdown-container">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-bold transition-all border cursor-pointer ${
+                className={`flex items-center space-x-1 px-2 py-1.5 sm:px-2.5 sm:space-x-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all border cursor-pointer ${
                   isDropdownOpen || activeTab === 'tracker' || activeTab === 'auth' || activeTab === 'admin' || activeTab === 'profile'
                     ? 'bg-white/20 border-white/25 text-white shadow-xs'
                     : 'border-transparent text-white/90 hover:bg-white/10 hover:text-white'
                 }`}
                 id="my-account-btn"
               >
-                <UserIcon className="h-4 w-4" />
-                <span>
+                <UserIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">
                   {currentUser ? `${t('namaste')}, ${currentUser.name.split(' ')[0]}` : t('my_account')}
                 </span>
-                <ChevronDown className={`h-3 w-3 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className="h-3 w-3 transition-transform duration-200" style={{ transform: isDropdownOpen ? 'rotate(180deg)' : 'none' }} />
               </button>
 
               {isDropdownOpen && (
@@ -261,29 +263,30 @@ export default function Header({
             {/* Cart Button with Flipkart Styling */}
             <button
               onClick={onOpenCart}
-              className="relative flex items-center space-x-1.5 px-3 py-1.5 text-white hover:bg-white/10 rounded-lg font-bold text-sm cursor-pointer transition-all border border-transparent hover:border-white/10"
+              className="relative flex items-center space-x-1 px-2 py-1.5 sm:px-2.5 sm:space-x-1.5 text-white hover:bg-white/10 rounded-lg font-bold text-xs sm:text-sm cursor-pointer transition-all border border-transparent hover:border-white/10"
               id="cart-trigger-btn"
             >
               <div className="relative">
-                <ShoppingCart className="h-5 w-5 text-white fill-white/10" />
+                <ShoppingCart className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white fill-white/10" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2.5 -right-2 bg-[#ff1212] border border-white text-white text-[9px] font-black rounded-full h-4.5 w-4.5 flex items-center justify-center animate-bounce">
+                  <span className="absolute -top-2 -right-1.5 bg-[#ff1212] border border-white text-white text-[8px] sm:text-[9px] font-black rounded-full h-4 sm:h-4.5 w-4 sm:w-4.5 flex items-center justify-center animate-bounce">
                     {cartCount}
                   </span>
                 )}
               </div>
-              <span className="hidden md:inline">{t('cart')}</span>
+              <span className="hidden sm:inline">{t('cart')}</span>
             </button>
 
             {/* Language Switcher on Right Most Side */}
             <button
               onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-              className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all text-xs font-black select-none cursor-pointer"
+              className="flex items-center space-x-1 px-2 py-1.5 md:px-2.5 md:py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all text-[10px] md:text-xs font-black select-none cursor-pointer"
               id="language-toggle-btn"
               title={language === 'en' ? "Switch to Hinglish" : "Switch to English"}
             >
               <Languages className="h-3.5 w-3.5 text-amber-400" />
-              <span className="tracking-wider">{language === 'en' ? 'ENGLISH' : 'HINGLISH'}</span>
+              <span className="tracking-wider hidden sm:inline">{language === 'en' ? 'ENGLISH' : 'HINGLISH'}</span>
+              <span className="tracking-wider sm:hidden">{language === 'en' ? 'EN' : 'HI'}</span>
             </button>
 
           </div>
@@ -292,16 +295,16 @@ export default function Header({
         {/* Mobile Search Bar */}
         {activeTab === 'shop' && (
           <div className="pb-3 md:hidden" id="mobile-search-container">
-            <div className="relative flex items-center">
+            <div className="relative flex items-center px-1">
               <input
                 type="text"
-                placeholder={t('search_items_placeholder')}
+                placeholder={t('search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/25 text-white placeholder-blue-100 rounded-lg py-2 pl-3 pr-10 text-sm focus:outline-none border border-white/15"
+                className="w-full bg-white/20 text-white placeholder-teal-100 rounded-lg py-2 pl-3.5 pr-10 text-xs focus:outline-none focus:bg-white focus:text-slate-800 focus:placeholder-slate-400 border border-white/15 transition-all shadow-inner"
                 id="mobile-search-input"
               />
-              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-100">
+              <div className="absolute inset-y-0 right-3 pr-2 flex items-center pointer-events-none text-teal-100">
                 <Search className="h-4 w-4" />
               </div>
             </div>

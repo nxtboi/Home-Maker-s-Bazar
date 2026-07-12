@@ -717,7 +717,62 @@ export default function AdminPanel({
                 </div>
               ) : (
                 <div className="bg-white/45 backdrop-blur-md rounded-2xl border border-white/50 overflow-hidden shadow-xs">
-                  <div className="overflow-x-auto">
+                  {/* Mobile Order Cards */}
+                  <div className="block sm:hidden space-y-4 p-4" id="mobile-admin-orders">
+                    {sortedOrders.map((ord) => {
+                      const isSelected = selectedOrder?.id === ord.id;
+                      return (
+                        <div
+                          key={ord.id}
+                          onClick={() => setSelectedOrder(ord)}
+                          className={`bg-white/80 p-4 rounded-xl border transition-all cursor-pointer ${
+                            isSelected 
+                              ? 'border-[#0f766e] ring-2 ring-teal-500/10 shadow-xs' 
+                              : 'border-slate-200'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <span className="font-mono font-black text-xs text-teal-700">{ord.id}</span>
+                              <span className="block text-[10px] text-slate-500 font-bold mt-0.5">
+                                {new Date(ord.createdAt).toLocaleDateString('en-IN')}
+                              </span>
+                            </div>
+                            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase ${
+                              ord.status === 'delivered' 
+                                ? 'bg-emerald-500/15 text-emerald-800' 
+                                : ord.status === 'shipped' 
+                                ? 'bg-teal-500/15 text-teal-800'
+                                : ord.status === 'returned'
+                                ? 'bg-rose-500/15 text-rose-800'
+                                : 'bg-amber-500/15 text-amber-800'
+                            }`}>
+                              {ord.status}
+                            </span>
+                          </div>
+                          
+                          <div className="space-y-1 text-xs text-slate-700">
+                            <p className="font-bold">Grahak: <span className="font-black text-slate-900">{ord.customerName}</span></p>
+                            <p className="font-medium text-[11px]">Phone: <span className="font-bold font-mono">{ord.customerPhone}</span></p>
+                            <p className="font-medium text-[11px]">Items: <span className="font-bold">{ord.items.length} ({ord.items.length === 1 ? 'item' : 'items'})</span></p>
+                          </div>
+
+                          <div className="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-100">
+                            <div className="text-[10px]">
+                              <span className="text-slate-400 block font-bold leading-none uppercase">Payment</span>
+                              <span className={`inline-block font-black mt-1 text-[8px] px-1.5 py-0.5 rounded border ${
+                                ord.paymentStatus === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'
+                              }`}>{ord.paymentStatus || 'processing'}</span>
+                            </div>
+                            <span className="text-sm font-black text-slate-900">₹{ord.totalAmount.toLocaleString('en-IN')}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop Order Table */}
+                  <div className="hidden sm:block overflow-x-auto">
                     <table className="min-w-full divide-y divide-slate-250/50 text-left text-xs">
                       <thead className="bg-[#0f766e]/10 text-[#0f766e] font-black uppercase tracking-wider text-[10px]">
                         <tr>

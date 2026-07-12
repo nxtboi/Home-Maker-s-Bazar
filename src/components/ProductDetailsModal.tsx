@@ -191,17 +191,17 @@ export default function ProductDetailsModal({
                 </p>
               </div>
 
-              <div className="pt-6 border-t border-white/40 flex items-center justify-between">
+              <div className="pt-6 border-t border-white/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <span className="text-xs text-slate-400 font-semibold block">{t('total_price')}</span>
                   <span className="text-2xl font-black text-slate-900">₹{product.price.toLocaleString('en-IN')}</span>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-end">
                   {onToggleWishlist && (
                     <button
                       onClick={() => onToggleWishlist(product)}
-                      className="p-3 rounded-2xl border border-teal-500/20 bg-white/40 hover:bg-white text-slate-800 hover:text-rose-500 transition-all cursor-pointer shadow-xs flex items-center justify-center"
+                      className="p-3 rounded-2xl border border-teal-500/20 bg-white/40 hover:bg-white text-slate-800 hover:text-rose-500 transition-all cursor-pointer shadow-xs flex items-center justify-center flex-shrink-0"
                       title={isWishlisted ? "Wishlist se hatayein" : "Wishlist mein jodein"}
                       id="modal-wishlist-toggle-btn"
                     >
@@ -215,7 +215,7 @@ export default function ProductDetailsModal({
                       onClose();
                     }}
                     disabled={product.stock <= 0}
-                    className={`px-6 py-3 rounded-2xl font-black text-sm transition-all flex items-center space-x-2 ${
+                    className={`flex-grow sm:flex-grow-0 px-6 py-3 rounded-2xl font-black text-sm transition-all flex items-center justify-center space-x-2 ${
                       product.stock <= 0
                         ? 'bg-slate-300/40 text-slate-400 cursor-not-allowed border border-white/20'
                         : 'glass-button-emerald text-white cursor-pointer shadow-lg'

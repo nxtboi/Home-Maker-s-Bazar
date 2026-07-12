@@ -50,7 +50,7 @@
       "customerName": "Rohit Mehra",
       "customerPhone": "9876543210",
       "customerAddress": "Flat 405, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103",
-      "paymentMethod": "UPI",
+      "paymentMethod": "Razorpay",
       "paymentStatus": "success",
       "createdAt": "2026-07-11T18:19:07.756Z",
       "trackingUpdates": [

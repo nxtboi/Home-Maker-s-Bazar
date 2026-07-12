@@ -200,10 +200,10 @@ export default function HelpSupport({ currentUser, onNavigateToTab, onTrackOrder
       category: 'returns'
     },
     {
-      q_en: "Does Home Maker's Bazar offer Cash on Delivery (COD)?",
-      q_hi: "Kya Home Maker's Bazar COD (Cash on Delivery) offer karta hai?",
-      a_en: 'Yes, we offer secure Cash on Delivery (COD) as well as cards and instant UPI payment methods for a smooth checkout experience.',
-      a_hi: 'Haan! Hum cash on delivery (COD), credit/debit card, aur instant UPI payments sabhi secure options provide karte hain.',
+      q_en: "How can I pay on Home Maker's Bazar?",
+      q_hi: "Home Maker's Bazar par payment kaise karein?",
+      a_en: "We offer secure online payment options powered by Razorpay. You can pay safely using your Credit/Debit cards, instant UPI apps (GPay, PhonePe, Paytm), Netbanking, or mobile Wallets.",
+      a_hi: "Hum Razorpay dwara powered secure online payment options offer karte hain. Aap apne Credit/Debit Card, UPI Apps (GPay, PhonePe, Paytm), Netbanking, ya mobile Wallets se surakshit tarike se pay kar sakte hain.",
       category: 'payment'
     },
     {

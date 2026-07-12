@@ -87,7 +87,7 @@ let orders: Order[] = [
     customerName: 'Rohit Mehra',
     customerPhone: '9876543210',
     customerAddress: 'Flat 405, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103',
-    paymentMethod: 'UPI',
+    paymentMethod: 'Razorpay',
     paymentStatus: 'success',
     createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
     trackingUpdates: [
@@ -467,7 +467,7 @@ app.post('/api/razorpay/verify-payment', (req, res) => {
       customerName,
       customerPhone,
       customerAddress,
-      paymentMethod: 'UPI', // Razorpay payment
+      paymentMethod: 'Razorpay', // Razorpay payment
       paymentStatus: 'processing',
       createdAt: now,
       trackingUpdates: [

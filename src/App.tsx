@@ -17,17 +17,72 @@ import { INITIAL_PRODUCTS } from './data/products';
 
 export default function App() {
   const [activeTab, setActiveTabState] = useState<'shop' | 'tracker' | 'admin' | 'auth' | 'profile' | 'support' | 'privacy' | 'terms'>(() => {
+    const validTabs = ['shop', 'tracker', 'admin', 'auth', 'profile', 'support', 'privacy', 'terms'];
+    
+    // 1. Check pathname
+    const path = window.location.pathname.replace(/^\//, '').toLowerCase();
+    if (validTabs.includes(path)) {
+      return path as any;
+    }
+    
+    // 2. Check query parameter '?page=...' or '?tab=...'
+    const params = new URLSearchParams(window.location.search);
+    const pageParam = params.get('page') || params.get('tab');
+    if (pageParam && validTabs.includes(pageParam.toLowerCase())) {
+      return pageParam.toLowerCase() as any;
+    }
+    
+    // 3. Check localStorage fallback
     const saved = localStorage.getItem('ab_active_tab');
-    if (saved) {
+    if (saved && validTabs.includes(saved)) {
       return saved as any;
     }
+    
     return 'shop';
   });
 
   const setActiveTab = (tab: 'shop' | 'tracker' | 'admin' | 'auth' | 'profile' | 'support' | 'privacy' | 'terms') => {
     setActiveTabState(tab);
     localStorage.setItem('ab_active_tab', tab);
+    
+    // Update the URL path to match the separate page URL
+    const newPath = '/' + tab;
+    if (window.location.pathname !== newPath) {
+      window.history.pushState({ tab }, '', newPath + window.location.search);
+    }
   };
+
+  // Sync state with browser navigation events (Back/Forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      const validTabs = ['shop', 'tracker', 'admin', 'auth', 'profile', 'support', 'privacy', 'terms'];
+      const path = window.location.pathname.replace(/^\//, '').toLowerCase();
+      
+      if (validTabs.includes(path)) {
+        setActiveTabState(path as any);
+      } else {
+        const params = new URLSearchParams(window.location.search);
+        const pageParam = params.get('page') || params.get('tab');
+        if (pageParam && validTabs.includes(pageParam.toLowerCase())) {
+          setActiveTabState(pageParam.toLowerCase() as any);
+        } else {
+          setActiveTabState('shop');
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    
+    // Redirect root / or index.html to /shop for clean initial URL
+    const path = window.location.pathname.replace(/^\//, '').toLowerCase();
+    if (path === '' || path === 'index.html') {
+      window.history.replaceState({ tab: 'shop' }, '', '/shop' + window.location.search);
+    }
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
   const [profileSubTab, setProfileSubTab] = useState<'profile' | 'orders' | 'wishlist' | 'support'>('profile');
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);

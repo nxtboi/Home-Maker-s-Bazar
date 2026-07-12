@@ -13,6 +13,7 @@ import HelpSupport from './components/HelpSupport';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfUse from './components/TermsOfUse';
 import { Product, OrderItem, User } from './types';
+import { INITIAL_PRODUCTS } from './data/products';
 
 export default function App() {
   const [activeTab, setActiveTabState] = useState<'shop' | 'tracker' | 'admin' | 'auth' | 'profile' | 'support' | 'privacy' | 'terms'>(() => {
@@ -30,7 +31,20 @@ export default function App() {
   const [profileSubTab, setProfileSubTab] = useState<'profile' | 'orders' | 'wishlist' | 'support'>('profile');
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    try {
+      const savedProducts = localStorage.getItem('ab_products');
+      if (savedProducts) {
+        const parsed = JSON.parse(savedProducts);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return INITIAL_PRODUCTS;
+  });
   const [cartItems, setCartItems] = useState<OrderItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -54,7 +68,6 @@ export default function App() {
       try {
         const parsed = JSON.parse(savedProducts);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setProducts(parsed);
           setIsLoading(false);
           hasLocal = true;
         }
@@ -141,8 +154,10 @@ export default function App() {
           try {
             setProducts(JSON.parse(savedProducts));
           } catch (e) {
-            console.error(e);
+            setProducts(INITIAL_PRODUCTS);
           }
+        } else {
+          setProducts(INITIAL_PRODUCTS);
         }
       }
     } finally {

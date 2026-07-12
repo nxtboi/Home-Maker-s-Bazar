@@ -1,0 +1,109 @@
+{
+  "reviews": [
+    {
+      "id": "rev-1",
+      "productId": "prod-1",
+      "userName": "Aakash Verma",
+      "rating": 5,
+      "comment": "Bahut hi premium phone hai! Battery life kamaal ki hai aur camera quality top notch.",
+      "createdAt": "2026-07-09T06:19:07.755Z"
+    },
+    {
+      "id": "rev-2",
+      "productId": "prod-1",
+      "userName": "Priya Sharma",
+      "rating": 4.6,
+      "comment": "Display quality super smooth hai. thoda mehnga hai par features mast hain.",
+      "createdAt": "2026-07-11T06:19:07.756Z"
+    },
+    {
+      "id": "rev-3",
+      "productId": "prod-2",
+      "userName": "Rahul Singh",
+      "rating": 4.5,
+      "comment": "Bass sound quality is very good. ANC makes a huge difference while traveling.",
+      "createdAt": "2026-07-07T06:19:07.756Z"
+    },
+    {
+      "id": "rev-4",
+      "productId": "prod-3",
+      "userName": "Vijay Kumar",
+      "rating": 4,
+      "comment": "Authentic leather design, premium finish. It has plenty of card slots.",
+      "createdAt": "2026-07-02T06:19:07.756Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-9876",
+      "items": [
+        {
+          "productId": "prod-2",
+          "name": "Super Bass Wireless Headphones",
+          "price": 2499,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
+        }
+      ],
+      "totalAmount": 2499,
+      "status": "shipped",
+      "customerName": "Rohit Mehra",
+      "customerPhone": "9876543210",
+      "customerAddress": "Flat 405, Green Glen Layout, Bellandur, Bengaluru, Karnataka - 560103",
+      "paymentMethod": "UPI",
+      "paymentStatus": "success",
+      "createdAt": "2026-07-11T18:19:07.756Z",
+      "trackingUpdates": [
+        {
+          "status": "placed",
+          "timestamp": "2026-07-11T18:19:07.756Z",
+          "note": "Order successfully placed on Apna Bazar."
+        },
+        {
+          "status": "processing",
+          "timestamp": "2026-07-11T20:19:07.756Z",
+          "note": "Product packed and verified at our Bengaluru warehouse."
+        },
+        {
+          "status": "shipped",
+          "timestamp": "2026-07-12T00:19:07.756Z",
+          "note": "Dispatched via BlueDart Express. Tracking ID: BD8920184."
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "sanju1234",
+      "passwordHash": "sanju1234",
+      "name": "Sanju Admin",
+      "role": "admin"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "TKT-3129",
+      "name": "Rohit Mehra",
+      "email": "rohit@mehra.com",
+      "phone": "9876543210",
+      "category": "delivery",
+      "subject": "Headphones delivery delayed",
+      "message": "Mera order BD8920184 abhi tak deliver nahi hua hai. BlueDart tracking shows in transit but delivery date was yesterday. Please help.",
+      "status": "open",
+      "createdAt": "2026-07-11T06:19:07.756Z",
+      "orderId": "ORD-9876"
+    },
+    {
+      "id": "TKT-1082",
+      "name": "Aakash Verma",
+      "email": "aakash@verma.com",
+      "phone": "9911223344",
+      "category": "refund",
+      "subject": "Refund for cancelled order",
+      "message": "Maine ek double walled steel bottle cancel kiya tha. Mera refund kab tak credit hoga?",
+      "status": "resolved",
+      "createdAt": "2026-07-09T06:19:07.756Z",
+      "reply": "Namaste Aakash, aapka refund process kar diya gaya hai. Agle 2-3 business days mein aapke bank account mein credit ho jayega. Dhanyawad!"
+    }
+  ]
+}

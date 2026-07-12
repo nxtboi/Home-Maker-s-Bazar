@@ -6,6 +6,7 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import fs from 'fs';
 import { Product, Review, Order, OrderStatus, TrackingUpdate, SupportTicket } from './src/types';
+import { INITIAL_PRODUCTS } from './src/data/products';
 
 dotenv.config();
 
@@ -32,58 +33,7 @@ const PORT = 3000;
 app.use(express.json());
 
 // In-memory Database
-let products: Product[] = [
-  {
-    id: 'prod-1',
-    name: 'Smart Phone Pro Max (128GB)',
-    description: 'High-performance smart phone with triple camera setup, 120Hz display, and all-day battery life.',
-    price: 84999,
-    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-    category: 'Accessories',
-    rating: 4.8,
-    stock: 15,
-  },
-  {
-    id: 'prod-2',
-    name: 'Super Bass Wireless Headphones',
-    description: 'Over-ear Bluetooth headphones with active noise cancellation, deep bass, and 40 hours playtime.',
-    price: 2499,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-    category: 'Accessories',
-    rating: 4.5,
-    stock: 25,
-  },
-  {
-    id: 'prod-3',
-    name: 'Classic Leather Men\'s Wallet',
-    description: 'Handcrafted genuine leather wallet with RFID blocking, 8 card slots, and dual currency compartments.',
-    price: 999,
-    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-    category: 'Accessories',
-    rating: 4.2,
-    stock: 50,
-  },
-  {
-    id: 'prod-4',
-    name: 'Ergonomic Premium Office Chair',
-    description: 'High-back mesh chair with adjustable lumbar support, 3D armrests, and synchro-tilt mechanism.',
-    price: 11999,
-    image: 'https://images.unsplash.com/photo-1505797149-43b0069ec26b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-    category: 'Furniture',
-    rating: 4.6,
-    stock: 8,
-  },
-  {
-    id: 'prod-5',
-    name: 'Double Walled Stainless Steel Bottle',
-    description: 'Vacuum insulated water bottle that keeps drinks cold for 24 hours and hot for 12 hours. 1 Litre.',
-    price: 799,
-    image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-    category: 'Kitchenware',
-    rating: 4.4,
-    stock: 100,
-  },
-];
+let products: Product[] = [...INITIAL_PRODUCTS];
 
 let reviews: Review[] = [
   {
@@ -209,7 +159,7 @@ const DB_FILE = path.join(process.cwd(), 'db.json');
 const saveDatabase = () => {
   try {
     const data = {
-      products,
+      // Products are stored as code (not in the database db.json)
       reviews,
       orders,
       users,
@@ -226,7 +176,7 @@ const loadDatabase = () => {
   try {
     if (fs.existsSync(DB_FILE)) {
       const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
-      if (data.products) products = data.products;
+      // Products are stored as code, do not load from db.json
       if (data.reviews) reviews = data.reviews;
       if (data.orders) orders = data.orders;
       if (data.users) users = data.users;
